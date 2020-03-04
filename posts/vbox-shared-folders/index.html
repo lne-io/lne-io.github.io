@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <title>Separate development environment using VirtualBox shared folders - LNE-IO</title>
+    
+    <meta name="description" content="I’ve got a new computer recently and the first thing I did was creating a new partition and install my favorite operating system which is Linux (Ubuntu). As a developer I always like to separate working environments as much as possible. For this reason I create virtual machines to setup my projects.
+VirtualBox shared folders feature allows me to write code on the host machine and gets it synchronized with guest machine instantly.">
+    <meta name="author" content="">
+    
+    <link href="https://lne-io.github.io/an-old-hope.min.css" rel="stylesheet">
+    <link href="https://lne-io.github.io/style.css" rel="stylesheet">
+    
+    <link rel="apple-touch-icon" href="https://lne-io.github.io/apple-touch-icon.png">
+    <link rel="icon" href="https://lne-io.github.io/favicon.ico">
+    
+    <meta name="generator" content="Hugo 0.60.1" />
+    
+    <link rel="alternate" type="application/atom+xml" href="https://lne-io.github.io/index.xml" title="LNE-IO">
+    
+    
+    
+    <script>
+      function setTheme() {
+        const time = new Date();
+
+        const prev = localStorage.getItem('date');
+        const date = String(time.getMonth() + 1) + '.' + String(time.getDate());
+
+        const now = time.getTime();
+        let sunrise;
+        let sunset;
+
+        function setBodyClass() {
+          if (now > sunrise && now < sunset) return;
+          document.body.classList.add('dark');
+        }
+
+        if (date !== prev) {
+          fetch('https://api.ipgeolocation.io/astronomy?apiKey=5ed37d85103e4defa5df4c5298ed5215')
+            .then(res => res.json())
+            .then(data => {
+              sunrise = data.sunrise.split(':').map(Number);
+              sunset = data.sunset.split(':').map(Number);
+            })
+            .catch(() => {
+              sunrise = [7, 0];
+              sunset = [19, 0];
+            })
+            .finally(() => {
+              sunrise = time.setHours(sunrise[0], sunrise[1], 0);
+              sunset = time.setHours(sunset[0], sunset[1], 0);
+              setBodyClass();
+              localStorage.setItem('sunrise', sunrise);
+              localStorage.setItem('sunset', sunset);
+            });
+          localStorage.setItem('date', date);
+        } else {
+          sunrise = Number(localStorage.getItem('sunrise'));
+          sunset = Number(localStorage.getItem('sunset'));
+          setBodyClass();
+        }
+      }
+    </script>
+  </head>
+  <body class="single">
+    <script>
+      setTheme();
+    </script>
+    <header class="header">
+      <nav class="nav">
+        
+        <p class="logo"><a href="https://lne-io.github.io">LNE-IO</a></p>
+        
+        
+      </nav>
+    </header>
+    <main class="main">
+
+
+<article class="post-single">
+  <header class="post-header">
+    <h1 class="post-title">Separate development environment using VirtualBox shared folders</h1>
+    <div class="post-meta">February 21, 2020</div>
+  </header>
+  <div class="post-content"><p>I’ve got a new computer recently and the first thing I did was creating a new partition and install my favorite operating system which is Linux (Ubuntu). As a developer I always like to separate working environments as much as possible. For this reason I create virtual machines to setup my projects.</p>
+<p>VirtualBox shared folders feature allows me to write code on the host machine and gets it synchronized with guest machine instantly. This keeps the host machine clean while having all project's dependencies installed on the guest machine.</p>
+<p>In this article I am going to show you how to synchronize a folder in your computer with a virtual machine folder. And also going through some issues that you my face with their solutions.</p>
+<p>After installing <code>VirtualBox</code>, it's time to create a new virtual machine. For me I just went and created a new machine and named it <code>devvm</code> then downloaded the latest <code>Ubuntu</code> server and installed it on this machine.</p>
+<p>On your computer go and create a folder. For example go to <code>Documents</code> and create <code>foo</code> folder.</p>
+<h2 id="synchronizing-host-machine-folder-with-guest-machine-folder">Synchronizing host machine folder with guest machine folder</h2>
+<ol>
+<li>
+<p>Select your virtual machine (<code>devvm</code> in my case) then click on <code>settings</code>. Go to <code>Shared folders</code> and click on <code>add</code> new shared folder icon.</p>
+<ul>
+<li>
+<p>In folder path choose <code>Other</code> and select the folder we created earlier (In my case <code>Documents/foo</code>).</p>
+</li>
+<li>
+<p>In folder name write <code>shared</code> which is the name of the folder to mount on guest machine.</p>
+</li>
+<li>
+<p>Check <code>auto-mount</code> if it’s not already checked and uncheck <code>Read-only</code> if it is checked.</p>
+</li>
+<li>
+<p>Leave <code>mount point</code> empty and then click on OK.</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Start the machine</p>
+</li>
+<li>
+<p>Create the folder that will be synchronized with <code>foo</code> in your virtual machine. in my case I created a folder named <code>bar</code>. Use <code>mkdir ~/bar</code> to create the folder in your home directory.</p>
+</li>
+<li>
+<p>Install virtual guest utils <code>sudo pip install virtual-guest-utils</code>.</p>
+</li>
+<li>
+<p>Use <code>mount</code> command to test that the two folder are synchronized. <code>sudo mount -t vboxsf shared ~/bar -o uid=1000,gid=1000</code></p>
+<ul>
+<li><code>echo $UID</code> to get uid value.</li>
+<li><code>id -g</code> to get gid value</li>
+</ul>
+</li>
+<li>
+<p>Create a new file on one side and verify that it gets created on the other side.</p>
+</li>
+</ol>
+<h2 id="make-mounting-permanent">Make mounting permanent</h2>
+<p>Up to this point everything looks good. Yet, you wouldn't want to mount the folder every time you start your virtual machine. Therefore, we need to make it permanent.</p>
+<ol>
+<li>
+<p>First we need to update <code>/etc/fstab</code> to mount our folder. Add this command on a new line inside <code>fstab</code></p>
+<ul>
+<li><code>/shared /home/&lt;username&gt;/bar       vboxsf  defaults,uid=1000,gid=1000,rw   0       0</code></li>
+<li><code>username</code> is your Ubuntu username</li>
+<li>Empty spaces are tabs</li>
+</ul>
+</li>
+<li>
+<p>We need <code>vboxsf</code> to be present at boot time. this is why we have to add it to <code>/etc/moduels</code>. Inside <code>modules</code> in a new line write <code>vboxsf</code></p>
+</li>
+<li>
+<p>Restart the machine and test again without mount command.</p>
+</li>
+</ol>
+<h2 id="troubleshoots">Troubleshoots</h2>
+<blockquote>
+<p>For security reasons the guest OS is not allowed to create symlinks by default. If you trust the guest OS to not abuse the functionality, you can enable creation of symlinks for a shared folder &ndash; <strong>&ldquo;VirtualBox website&rdquo;</strong></p>
+</blockquote>
+<p>You may work on a project that requires creating symlinks from guest machine to host machine. For example installing some nodejs modules will require this functionality and it won’t function without it. Symlinks are disabled by default.</p>
+<p>To enable symlinks run this command inside your computer <code>VBoxManage setextradata VM_NAME VBoxInternal2/SharedFoldersEnableSymlinksCreate/SHARE_NAME 1</code> Where <code>VM_NAME</code> is the virtual machine name (<code>devvm</code> in my case) share name is the folder name which is <code>shared</code></p>
+<blockquote>
+<p>Watching files or directories can be unreliable, and in some cases impossible, on network file systems (NFS, SMB, etc), or host file systems when using virtualization software such as Vagrant, Docker, etc. &ndash; <strong>&ldquo;Nodejs.org  file system API docs&rdquo;</strong></p>
+</blockquote>
+<p>When you use Browsersync for example to watch files and folders then it won't function with the default configuration. This tool and others use <code>fs.watch</code> (Nodejs file system function) to watch changes but as mentioned above it is not going to work on this case. Enabling polling on these tools to use <code>fs.watchFile</code> will fix the issue. Polling is not specific to <code>Nodejs</code> thus, this will work for other libraries too.</p>
+</div>
+  
+  
+  
+  
+  
+</article>
+
+</main>
+<footer class="footer">
+  <span>&copy; 2020 <a href="https://lne-io.github.io">LNE-IO</a></span>
+  <span>&middot;</span>
+  <span>Powered by <a href="https://gohugo.io/" rel="noopener" target="_blank">Hugo️️</a>️</span>
+  <span>&middot;</span>
+  <span>Theme️ <a href="https://github.com/nanxiaobei/hugo-paper" rel="noopener" target="_blank">Paper</a></span>
+</footer>
+<script src="https://lne-io.github.io/highlight.min.js"></script>
+<script>
+  hljs.initHighlightingOnLoad();
+</script>
+</body>
+</html>
+
