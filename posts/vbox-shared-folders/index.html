@@ -17,7 +17,7 @@ VirtualBox shared folders feature allows me to write code on the host machine an
     <link rel="apple-touch-icon" href="https://lne-io.github.io/apple-touch-icon.png">
     <link rel="icon" href="https://lne-io.github.io/favicon.ico">
     
-    <meta name="generator" content="Hugo 0.60.1" />
+    <meta name="generator" content="Hugo 0.68.3" />
     
     <link rel="alternate" type="application/atom+xml" href="https://lne-io.github.io/index.xml" title="LNE-IO">
     
@@ -87,9 +87,9 @@ VirtualBox shared folders feature allows me to write code on the host machine an
     <div class="post-meta">February 21, 2020</div>
   </header>
   <div class="post-content"><p>I’ve got a new computer recently and the first thing I did was creating a new partition and install my favorite operating system which is Linux (Ubuntu). As a developer I always like to separate working environments as much as possible. For this reason I create virtual machines to setup my projects.</p>
-<p>VirtualBox shared folders feature allows me to write code on the host machine and gets it synchronized with guest machine instantly. This keeps the host machine clean while having all project's dependencies installed on the guest machine.</p>
+<p>VirtualBox shared folders feature allows me to write code on the host machine and gets it synchronized with guest machine instantly. This keeps the host machine clean while having all project&rsquo;s dependencies installed on the guest machine.</p>
 <p>In this article I am going to show you how to synchronize a folder in your computer with a virtual machine folder. And also going through some issues that you my face with their solutions.</p>
-<p>After installing <code>VirtualBox</code>, it's time to create a new virtual machine. For me I just went and created a new machine and named it <code>devvm</code> then downloaded the latest <code>Ubuntu</code> server and installed it on this machine.</p>
+<p>After installing <code>VirtualBox</code>, it&rsquo;s time to create a new virtual machine. For me I just went and created a new machine and named it <code>devvm</code> then downloaded the latest <code>Ubuntu</code> server and installed it on this machine.</p>
 <p>On your computer go and create a folder. For example go to <code>Documents</code> and create <code>foo</code> folder.</p>
 <h2 id="synchronizing-host-machine-folder-with-guest-machine-folder">Synchronizing host machine folder with guest machine folder</h2>
 <ol>
@@ -131,7 +131,7 @@ VirtualBox shared folders feature allows me to write code on the host machine an
 </li>
 </ol>
 <h2 id="make-mounting-permanent">Make mounting permanent</h2>
-<p>Up to this point everything looks good. Yet, you wouldn't want to mount the folder every time you start your virtual machine. Therefore, we need to make it permanent.</p>
+<p>Up to this point everything looks good. Yet, you wouldn&rsquo;t want to mount the folder every time you start your virtual machine. Therefore, we need to make it permanent.</p>
 <ol>
 <li>
 <p>First we need to update <code>/etc/fstab</code> to mount our folder. Add this command on a new line inside <code>fstab</code></p>
@@ -148,7 +148,7 @@ VirtualBox shared folders feature allows me to write code on the host machine an
 <p>Restart the machine and test again without mount command.</p>
 </li>
 </ol>
-<h2 id="troubleshoots">Troubleshoots</h2>
+<h2 id="troubleshoot">Troubleshoot</h2>
 <blockquote>
 <p>For security reasons the guest OS is not allowed to create symlinks by default. If you trust the guest OS to not abuse the functionality, you can enable creation of symlinks for a shared folder &ndash; <strong>&ldquo;VirtualBox website&rdquo;</strong></p>
 </blockquote>
@@ -157,7 +157,7 @@ VirtualBox shared folders feature allows me to write code on the host machine an
 <blockquote>
 <p>Watching files or directories can be unreliable, and in some cases impossible, on network file systems (NFS, SMB, etc), or host file systems when using virtualization software such as Vagrant, Docker, etc. &ndash; <strong>&ldquo;Nodejs.org  file system API docs&rdquo;</strong></p>
 </blockquote>
-<p>When you use Browsersync for example to watch files and folders then it won't function with the default configuration. This tool and others use <code>fs.watch</code> (Nodejs file system function) to watch changes but as mentioned above it is not going to work on this case. Enabling polling on these tools to use <code>fs.watchFile</code> will fix the issue. Polling is not specific to <code>Nodejs</code> thus, this will work for other libraries too.</p>
+<p>When you use Browsersync for example to watch files and folders then it won&rsquo;t function with the default configuration. This tool and others use <code>fs.watch</code> (Nodejs file system function) to watch changes but as mentioned above it is not going to work on this case. Enabling polling on these tools to use <code>fs.watchFile</code> will fix the issue. Polling is not specific to <code>Nodejs</code> thus, this will work for other libraries too.</p>
 </div>
   
   
@@ -168,7 +168,7 @@ VirtualBox shared folders feature allows me to write code on the host machine an
 
 </main>
 <footer class="footer">
-  <span>&copy; 2020 <a href="https://lne-io.github.io">LNE-IO</a></span>
+  <span>&copy; 2021 <a href="https://lne-io.github.io">LNE-IO</a></span>
   <span>&middot;</span>
   <span>Powered by <a href="https://gohugo.io/" rel="noopener" target="_blank">Hugo️️</a>️</span>
   <span>&middot;</span>
